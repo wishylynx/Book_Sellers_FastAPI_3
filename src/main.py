@@ -6,6 +6,17 @@ from fastapi.responses import ORJSONResponse
 from src.configurations.database import create_db_and_tables, delete_db_and_tables, global_init
 from src.routers import v1_router
 
+from dotenv import load_dotenv
+import os
+
+from src.routers.v1.sellers import sellers_router
+
+
+dotenv_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+load_dotenv(dotenv_path)
+print(f"Loaded DB_HOST from .env: {os.getenv('DB_HOST')}")
+print(f"Loaded DB_NAME from .env: {os.getenv('DB_NAME')}")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # Рекомендуется теперь вместо @app.on_event()
@@ -13,8 +24,8 @@ async def lifespan(app: FastAPI):  # Рекомендуется теперь в�
     global_init()
     await create_db_and_tables()
     yield
-    # Запускается при остановке приложения
-    await delete_db_and_tables()
+    # Убрал удаление базы данных
+    # await delete_db_and_tables()
 
 
 # Само приложение fastApi. именно оно запускается сервером и служит точкой входа
@@ -35,6 +46,7 @@ app = create_application()
 
 def _configure():
     app.include_router(v1_router)
+    app.include_router(sellers_router, prefix="/api/v1/seller", tags=["sellers"])
 
 
 # @app.on_event("startup")  # Вместо этого теперь рекомендуется lifespan
