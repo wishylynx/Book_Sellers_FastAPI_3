@@ -13,7 +13,10 @@
 """
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 
 class Settings(BaseSettings):
     # for PostgreSQL
@@ -33,4 +36,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
+
 settings = Settings()
+
+print(f"DB_HOST: {settings.db_host}, DB_NAME: {settings.db_name}")
